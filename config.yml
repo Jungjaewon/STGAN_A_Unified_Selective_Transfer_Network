@@ -1,0 +1,64 @@
+
+MODEL_CONFIG:
+  IMG_SIZE: 256
+
+TRAINING_CONFIG:
+
+  EPOCH: 100
+  BATCH_SIZE: 8
+
+  # lr and lambda
+  G_LR : 10e-6
+  D_LR : 20e-6
+  LAMBDA_G_FAKE  : 1
+  LAMBDA_G_RECON : 100
+  LAMBDA_D_FAKE  : 1
+  LAMBDA_D_REAL  : 1
+  LAMBDA_CLS  : 0.5
+  LAMBDA_GP : 10
+
+  GAN_LOSS : 'wgan'
+
+  # Optimizer
+  OPTIM : ADAM
+  BETA1: 0.5
+  BETA2: 0.999
+  D_CRITIC : 1
+  G_CRITIC : 3
+
+  # Settings
+  NUM_CLS : 10
+  ANNOTATION_TXT : 'list_attr_celeba.txt'
+  NUM_WORKER : 4
+  MODE : 'train'
+  CPU_SEED : 123
+  GPU_SEED : 456
+  USE_TENSORBOARD : 'False' # 'True' or 'False'
+
+  #spectral norm
+  G_SPEC : 'False'
+  D_SPEC : 'True'
+
+  # Directory
+  IMG_DIR : 'train'
+  TRAIN_DIR : 'st_gan'
+  LOG_DIR : 'logs'
+  SAMPLE_DIR : 'samples'
+  RESULT_DIR : 'results'
+  MODEL_DIR : 'models'
+
+  # GPU
+  GPU: 0
+
+  # Step Size
+
+  SAMPLE_STEP : 1 # epoch based
+  LOG_STEP : 100 # iteration based
+  SAVE_STEP : 5 # epoch based
+  SAVE_START : 10
+  LR_DECAY_STEP : 20
+
+TEST_CONFIG:
+  TEST_EPOCH : 100
+
+
