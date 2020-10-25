@@ -48,7 +48,7 @@ TRAINING_CONFIG:
   MODEL_DIR : 'models'
 
   # GPU
-  GPU: 0
+  GPU: 3
 
   # Step Size
 
