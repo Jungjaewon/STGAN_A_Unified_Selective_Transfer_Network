@@ -220,7 +220,7 @@ class Solver(object):
                     real_score, pred = self.D(image)
                     fake_score, _ = self.D(fake_images.detach())
 
-                    d_cls_loss = self.lambda_cls * self.cls_loss(pred, attr_t)
+                    d_cls_loss = self.lambda_cls * self.cls_loss(pred, attr_s)
 
                     if self.gan_loss in ['lsgan', 'vanilla']:
                         d_loss_real = self.adversarial_loss(real_score, torch.ones_like(real_score))
