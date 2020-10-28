@@ -235,6 +235,10 @@ class Solver(object):
                         d_loss_gp = self.gradient_penalty(out_src, x_hat)
                         d_loss = self.lambda_d_real * d_loss_real + self.lambda_d_fake * d_loss_fake + self.lambda_d_gp * d_loss_gp + d_cls_loss
 
+                    if torch.isnan(d_loss) or torch.isinf(d_loss):
+                        print('d_loss is nan or inf')
+                        return
+
                     # Backward and optimize.
                     self.reset_grad()
                     d_loss.backward()
@@ -267,6 +271,10 @@ class Solver(object):
                     g_loss = self.lambda_g_fake * g_loss_fake + \
                              self.lambda_g_recon * g_loss_recon + \
                              self.lambda_cls * g_cls_loss
+
+                    if torch.isnan(g_loss) or torch.isinf(g_loss):
+                        print('g_loss is nan or inf')
+                        return
 
                     self.reset_grad()
                     g_loss.backward()
