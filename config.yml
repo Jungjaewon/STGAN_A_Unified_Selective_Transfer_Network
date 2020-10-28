@@ -5,11 +5,11 @@ MODEL_CONFIG:
 TRAINING_CONFIG:
 
   EPOCH: 100
-  BATCH_SIZE: 8
+  BATCH_SIZE: 16
 
   # lr and lambda
-  G_LR : 10e-6
-  D_LR : 20e-6
+  G_LR : 10e-4
+  D_LR : 20e-4
   LAMBDA_G_FAKE  : 1
   LAMBDA_G_RECON : 100
   LAMBDA_D_FAKE  : 1
@@ -28,7 +28,7 @@ TRAINING_CONFIG:
 
   # Settings
   NUM_CLS : 10
-  ANNOTATION_TXT : 'list_attr_celeba.txt'
+  ANNOTATION_TXT : 'celeba/list_attr_celeba.txt'
   NUM_WORKER : 4
   MODE : 'train'
   CPU_SEED : 123
@@ -40,15 +40,15 @@ TRAINING_CONFIG:
   D_SPEC : 'True'
 
   # Directory
-  IMG_DIR : 'train'
-  TRAIN_DIR : 'st_gan'
+  IMG_DIR : 'train_data'
+  TRAIN_DIR : 'st_gan_small'
   LOG_DIR : 'logs'
   SAMPLE_DIR : 'samples'
   RESULT_DIR : 'results'
   MODEL_DIR : 'models'
 
   # GPU
-  GPU: 3
+  GPU: 1
 
   # Step Size
 
