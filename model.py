@@ -83,15 +83,15 @@ class Encoder(nn.Module):
         self.layer2 = ConvBlock(16, 32, stride=2, spec_norm=spec_norm, LR=LR) # 128 -> 64
         self.layer3 = ConvBlock(32, 64, stride=2, spec_norm=spec_norm, LR=LR) # 64-> 32
         self.layer4 = ConvBlock(64, 128, stride=2, spec_norm=spec_norm, LR=LR) # 32 -> 16
-        self.layer5 = ConvBlock(128, 256, stride=2, spec_norm=spec_norm, LR=LR) # 16 -> 8
+        #self.layer5 = ConvBlock(128, 256, stride=2, spec_norm=spec_norm, LR=LR) # 16 -> 8
 
     def forward(self, image):
         feature1 = self.layer1(image)
         feature2 = self.layer2(feature1)
         feature3 = self.layer3(feature2)
         feature4 = self.layer4(feature3)
-        feature5 = self.layer5(feature4)
-        return [feature1, feature2, feature3, feature4, feature5]
+        #feature5 = self.layer5(feature4)
+        return [feature1, feature2, feature3, feature4]
 
 
 class Generator(nn.Module):
@@ -100,13 +100,13 @@ class Generator(nn.Module):
         self.num_attr = num_attr
         self.encoder = Encoder(in_channel, spec_norm, LR)
 
-        self.layer5 = ConvBlock(256 + num_attr, 128, spec_norm=spec_norm, LR=LR)  # 8 - > 16
-        self.layer4 = ConvBlock(128 + 128, 128, spec_norm=spec_norm, LR=LR)  # 16 - > 32
+        #self.layer5 = ConvBlock(256 + num_attr, 128, spec_norm=spec_norm, LR=LR)  # 8 - > 16
+        self.layer4 = ConvBlock(128 + num_attr, 128, spec_norm=spec_norm, LR=LR)  # 16 - > 32
         self.layer3 = ConvBlock(128 + 64, 64, spec_norm=spec_norm, LR=LR)  # 32 -> 64
         self.layer2 = ConvBlock(64 + 32, 64, spec_norm=spec_norm, LR=LR)  # 64 -> 128
         self.layer1 = ConvBlock(64 + 16, 32, spec_norm=spec_norm, LR=LR)  # 128 -> 256
 
-        self.up5 = nn.ConvTranspose2d(128, 128, kernel_size=4, stride=2, padding=1)
+        #self.up5 = nn.ConvTranspose2d(128, 128, kernel_size=4, stride=2, padding=1)
         self.up4 = nn.ConvTranspose2d(128, 128, kernel_size=4, stride=2, padding=1)
         self.up3 = nn.ConvTranspose2d(64, 64, kernel_size=4, stride=2, padding=1)
         self.up2 = nn.ConvTranspose2d(64, 64, kernel_size=4, stride=2, padding=1)
@@ -115,33 +115,25 @@ class Generator(nn.Module):
         self.last_conv = nn.Conv2d(32, out_channel, kernel_size=3, stride=1, padding=1)
         self.tanh = nn.Tanh()
 
-        self.STU_4 = STU(feature_channel=128, state_channel=256, num_attr=num_attr)
+        #self.STU_4 = STU(feature_channel=128, state_channel=256, num_attr=num_attr)
         self.STU_3 = STU(feature_channel=64, state_channel=128,  num_attr=num_attr)
         self.STU_2 = STU(feature_channel=32, state_channel=64,  num_attr=num_attr)
         self.STU_1 = STU(feature_channel=16, state_channel=32,  num_attr=num_attr)
 
     def forward(self, image, attr_diff):
-        feature1, feature2, feature3, feature4, feature5 = self.encoder(image)
-        # 128, 64, 32, 16, 8
+        feature1, feature2, feature3, feature4 = self.encoder(image)
+        # 128, 64, 32, 16
 
-        """
-        self.layer1 = ConvBlock(in_channel, 16, stride=2, spec_norm=spec_norm, LR=LR) # 256 -> 128
-        self.layer2 = ConvBlock(16, 32, stride=2, spec_norm=spec_norm, LR=LR) # 128 -> 64
-        self.layer3 = ConvBlock(32, 64, stride=2, spec_norm=spec_norm, LR=LR) # 64-> 32
-        self.layer4 = ConvBlock(64, 128, stride=2, spec_norm=spec_norm, LR=LR) # 32 -> 16
-        self.layer5 = ConvBlock(128, 256, stride=2, spec_norm=spec_norm, LR=LR) # 16 -> 8
-        """
-
-        trans_featrue_4, new_state_4 = self.STU_4(feature=feature4, state=feature5, attribute=attr_diff) # 16
-        trans_featrue_3, new_state_3 = self.STU_3(feature=feature3, state=new_state_4, attribute=attr_diff) # 32
+        #trans_featrue_4, new_state_4 = self.STU_4(feature=feature4, state=feature5, attribute=attr_diff) # 16
+        trans_featrue_3, new_state_3 = self.STU_3(feature=feature3, state=feature4, attribute=attr_diff) # 32
         trans_featrue_2, new_state_2 = self.STU_2(feature=feature2, state=new_state_3, attribute=attr_diff) # 64
         trans_featrue_1, new_state_1 = self.STU_1(feature=feature1, state=new_state_2, attribute=attr_diff) # 128
 
-        batch, _, h, w = feature5.size()
+        batch, _, h, w = feature4.size()
         attr_5 = attr_diff.view(batch, self.num_attr, 1, 1).expand((batch, self.num_attr, h, w))
 
-        dec_layer5 = self.up5(self.layer5(torch.cat([feature5, attr_5], dim=1))) # 8 -> 16
-        dec_layer4 = self.up4(self.layer4(torch.cat([dec_layer5, trans_featrue_4], dim=1))) # 16 -> 32
+        #dec_layer5 = self.up5(self.layer5(torch.cat([feature5, attr_5], dim=1))) # 8 -> 16
+        dec_layer4 = self.up4(self.layer4(torch.cat([feature4, attr_5], dim=1))) # 16 -> 32
         dec_layer3 = self.up3(self.layer3(torch.cat([dec_layer4, trans_featrue_3], dim=1))) # 32 -> 64
         dec_layer2 = self.up2(self.layer2(torch.cat([dec_layer3, trans_featrue_2], dim=1))) # 64 -> 128
         dec_layer1 = self.up1(self.layer1(torch.cat([dec_layer2, trans_featrue_1], dim=1))) # 128 -> 256
