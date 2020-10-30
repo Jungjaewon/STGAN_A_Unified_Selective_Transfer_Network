@@ -45,7 +45,7 @@ def filtering_data(annotation_txt, selected_attr, img_dir, dst_dir):
     data_list = [osp.join(img_dir, x) for x in data_list]
     random.seed(349)
     random.shuffle(data_list)
-    data_list = data_list[:20000]
+    data_list = data_list[:180000]
 
     for idx, image_path in tqdm(enumerate(data_list)):
         image_name = image_path.split(os.sep)[-1]

@@ -4,12 +4,12 @@ MODEL_CONFIG:
 
 TRAINING_CONFIG:
 
-  EPOCH: 100
-  BATCH_SIZE: 16
+  EPOCH: 200
+  BATCH_SIZE: 8
 
   # lr and lambda
-  G_LR : 10e-4
-  D_LR : 20e-4
+  G_LR : 10e-5
+  D_LR : 20e-5
   LAMBDA_G_FAKE  : 1
   LAMBDA_G_RECON : 100
   LAMBDA_D_FAKE  : 1
@@ -41,7 +41,7 @@ TRAINING_CONFIG:
 
   # Directory
   IMG_DIR : 'train_data'
-  TRAIN_DIR : 'st_gan_small'
+  TRAIN_DIR : 'st_gan'
   LOG_DIR : 'logs'
   SAMPLE_DIR : 'samples'
   RESULT_DIR : 'results'
